@@ -1,0 +1,19 @@
+                      $scope.getS = "获取验证码";
+                      // 短信倒计时模块，使用时注意起始时间要设置少1秒，因为点击后会有延时
+                        var second = 59,
+                            timePromise = undefined;
+                        timePromise = $interval(function(){
+                            if(second<=0){
+                                $interval.cancel(timePromise);
+                                timePromise = undefined;
+                                second = 59;
+                                //ng-model绑定按钮，更改按钮显示内容
+                                $scope.getS = "重发验证码";
+                                $scope.paraclass = false;
+                            }else{
+                                $scope.getS = second + "s后可重发";
+                                $scope.paraclass = true;
+                                second--;
+                            }
+                        },1000,61);
+                        //$interval控制倒计时次数的时候，要多设置一点，防止出现停在最后一秒的情况
