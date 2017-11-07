@@ -1,0 +1,49 @@
+
+控制器中代码：注意把省市县的json数据写到constant中，然后在该控制器中将cityJson注入；
+省份直接在HTML中用ng-options遍历cityJson，将title显示即可；
+$scope.cityJson = cityJson;
+        $scope.citys = [];
+        $scope.county = [];
+        // 省市县三级联动
+        $scope.$watch('province',function(newValue,oldValue){
+            if(newValue != oldValue){
+                if(!newValue){ //判断是否选择省份，如果没有则重置市区
+                    $scope.citys = [];
+                    $scope.county = [];
+                    return;
+                }
+                $scope.citys = $filter('wordsCityFilter')($scope.province);
+                $scope.county = [];
+                console.log($scope.citys)
+            }
+        });
+        $scope.$watch('city',function(newValue,oldValue){
+            if(newValue != oldValue){
+                if(!newValue){ //作用同上
+                    $scope.county = [];
+                    return;
+                } else {
+                    angular.forEach($scope.citys,function (data) {
+                        if ($scope.city == data.area_id ) {
+                            $scope.county = data.son
+                        }
+                    })
+                }
+            }
+        });
+        
+        由于省市县是一个json对象，只能用一次filter，因此在过滤器中定义一个city的过滤器，根据省份选出城市；
+        过滤器中代码：
+        myApp.filter('wordsCityFilter',function (cityJson) {
+            return function (id) {
+                var citys = [];
+                if (id) {
+                    angular.forEach(cityJson,function (data) {
+                        if (data.area_id == id) {
+                            citys = data.son
+                        }
+                    })
+                }
+                return citys;
+            }
+        })
