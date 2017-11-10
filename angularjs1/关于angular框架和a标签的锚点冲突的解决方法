@@ -1,1 +1,21 @@
-
+前端应用angular框架的时候，会发现a标签的锚点跟路由有冲突，因为都是#开头，锚点应用的时候会被当做路由的路径处理，导致无法跳转到对应的锚点；
+angulaur为此提供了一个$anchorScroll，可以解决路由和锚点冲突的问题，但是一般还要配合偏移才能显示正常，不然会有锚点指向的字体被覆盖的情况；
+完成代码如下：
+angular.module('userApp')
+    .run(['$anchorScroll', function($anchorScroll) {
+        $anchorScroll.yOffset = 114;// 需要额外向下偏移114px才能防止fiexd定位的页眉遮住单词
+    }])
+    .controller('wordsListCtrl',function ($scope,$anchorScroll,$location) {
+      
+        $scope.wordsArry = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+        $scope.gotoWords = function (id) {
+            $location.hash(id);
+            $anchorScroll();
+        };
+   })
+   偏移量放在最开始运行，避免出现失败的情况；
+   该处代码的含义是：点击大写字母，跳转到对应字母开头的单词；html会有从A-Z的id来对应；
+   <ul class="wordsList_nav">
+       <li ng-repeat="words in wordsArry" ng-click="gotoWords(words)">{{words}}</li>
+   </ul>
+   用ng-repeat来生成A-Z的侧边栏；，点击侧边栏的时候将当前单词传到函数中，来实现查找对应锚点的功能；
