@@ -4,3 +4,56 @@
 第三步：手机端支付完后，后端会收到微信提供的是否支付成功的信息，前端来请求后端，查询订单是否完成，然后进行后续操作；
 
 第一步代码：
+//微信购买某年级单词，调用微信支付接口
+$scope.buyWords = function () {
+    $http({
+        method: 'post',
+        url: pathProject.postProductId, //接口参数
+        params: {
+          productId: $rootScope.wordsGradeId //要购买的产品id
+        }
+        }).then(function successCallback(res) {
+        if (res.data.code == 0) {
+          var respanse = res.data.data; //后端请求微信的参数返回给前端
+          $scope.pay(respanse); //调用微信支付接口函数
+        }
+        }, function errorCallback(res) {
+          $scope.wordsActivationcode = true; //点击维信支付的链接是个单独的form表单，请求失败的话要保留该表单，使用户能继续操作
+          alert('请求超时，请稍后重新提交信息。')
+    });
+};
+第二步代码：注意微信支付接口不支持在微信开发者工具里面调试，必须部署线上环境然后用手机微信测试，appId,timeStamp这些参数名称都要用“”包含，
+不然有可能丢失参数，后端注意返回签名不是微信给的签名，是需要后端根据appId等参数自己来拼接并加密生成的；
+//微信支付，微信开发者API，固定格式
+$scope.pay = function(respanse){
+    WeixinJSBridge.invoke(
+        'getBrandWCPayRequest', {
+        "appId": respanse.appid, //必填，公众号名称
+        "timeStamp": respanse.timestamp, // 必填，时间戳,秒数
+        "nonceStr": respanse.nonce_str, // 必填，随机字符串,
+        "package": "prepay_id=" + respanse.prepay_id, //必填，订单详情扩展字符串
+        "signType": "MD5", // 必填，微信签名方式：
+        "paySign": respanse.sign //必填，微信签名
+        },
+        function(res){
+        if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+        $scope.wordsActivationcode = false; //支付成功后将表单隐藏
+        $scope.searchPay(respanse.purchaseId) //查询订单是否完成函数
+        } else {
+        alert("支付失败")
+    }
+    }
+    );
+};
+第三步代码：
+//订单查询，判断客户是否购买成功，订单处理都是后端操作的，直接根据后端返回数据来判断即可
+$scope.searchPay = function (id) {
+    wxServices.getPay(id).then(function (response) {
+    if (response.data.code == 0) {
+    alert('购买成功');
+    $scope.reloadRoute()
+    } else {
+    alert(response.data.message)
+    }
+  })
+};
