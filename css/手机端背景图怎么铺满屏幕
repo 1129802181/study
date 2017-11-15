@@ -1,0 +1,5 @@
+    手机端设置背景色，使其根据手机高度自适应显示背景色
+    max-width: 640px;
+    min-height: 100vh;
+    background: url("http://cdn.spbcn.org/img/gamesBg.png") no-repeat center;
+    background-size: cover;
