@@ -1,0 +1,27 @@
+angular项目中，需要在页面请求未完成之前显示加载中的样式，避免出现空白页面，尤其是在微信公众号端；
+可以通过http请求实现拦截，所有页面都可以在请求未完成之前显示加载中的样式；
+首先在index页面添加上加载中的样式：
+代码如下：
+ <div ng-if="loading" style="background-color: rgba(0, 0, 0, 0.17); width: 100%; height: 100vh;">
+       <div id="mark-loading">加载中...</div>
+    </div>
+ <div ui-view></div>
+ 在路由页面添加代码：
+  $httpProvider.interceptors.push('myInterceptor');
+  然后在工厂函数中定义：myInterceptor
+  angular.module('userApp')
+    .factory('myInterceptor', ["$rootScope", function ($rootScope) {
+        var timestampMarker = {
+            request: function (config) {
+                $rootScope.loading = true;
+                return config;
+            },
+            response: function (response) {
+                $rootScope.loading = false;
+                return response;
+            }
+        };
+        return timestampMarker;
+    }]);
+    当强求未完成的时候显示request的内容，完成后显示response中的内容；
+    angularJs提供四种拦截器，其中两种成功拦截器（request、response），两种失败拦截器（requestError、responseError）。
