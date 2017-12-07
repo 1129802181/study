@@ -1,0 +1,25 @@
+所有的li是遍历出来的，需要实现点击某一个li标签的时候，更改border的颜色
+html代码：
+  <ul ng-if="params.questionTypeId == 8">
+            <li class="gamePre-def" ng-repeat=" word in wordsDef" ng-click='li_click($index)'
+                ng-class='{focus: $index == focus}'> {{word}}</li>
+  </ul>
+js代码：
+$scope.li_click = function (i) {
+                $scope.focus = i;
+            };
+ ①在< li >元素的单击事件中，将执行$scope对象中添加的"li_click()"方法;
+
+ ②在该方法中将"$index(行号值)"作为实参传给方法，并将"focus"属性值设为“$index”值；
+
+ ③因此当单击某行< li >元素时,"focus"属性值将变为相应的"$index"；
+
+ ④此时,< li >元素的"ng-class"样式指令通过key/value对象的方式指定该元素需要添加的样式,由于单击< li >元素时，"$index"变量值和"focus"属性值相同，也就是说"$index==focus"的返回值为true；
+
+ ⑤此时您应该明白了，"ng-class"的样式指令值变为"focus";
+
+ ⑥经过上面的分析及操作，我们实现了单击< li >元素时,添加border的效果.
+ css样式：
+ ul .focus {
+    border: 1px solid blue;
+}
