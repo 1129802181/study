@@ -1,6 +1,19 @@
 
 angular中关于http请求中数据格式的问题：
 1、简写和不简写的区别：
-
+angular有两种方式来书写http请求，常规写法和简写；
+常规写法：
+$http({
+    method: 'GET',
+    url: '/someUrl'
+}).then(function successCallback(response) {
+        // 请求成功执行代码
+    }, function errorCallback(response) {
+        // 请求失败执行代码
+});
+简写方式：
+$http.get('/someUrl').then(successCallback, errorCallback);
 
 2、data和params的区别：
+简而言之：data是将请求参数放到一个对象中发送给服务器；
+params是将请求参数以键值对的形式直接发送给服务器，该方式会将参数直接添加到请求路径的url后面，是可见的，不论请求方式是get还是post等
